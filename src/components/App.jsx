@@ -7,11 +7,10 @@ import Button from './Button/Button';
 import { Loader } from './Loader/Loader';
 import { ToastContainer, toast, Slide } from 'react-toastify';
 
-export default function App ()  {
+export default function App() {
   const [searchName, setSearchName] = useState('');
   const [images, setImages] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
 
@@ -23,23 +22,24 @@ export default function App ()  {
         const data = await API.getImages(searchName, currentPage);
 
         if (data.hits.length === 0) {
-          return toast.info('Sorry image not found...', {
+          toast.info('Sorry image not found...', {
             position: toast.POSITION.TOP_RIGHT,
           });
+          return;
         }
 
         const normalizedImages = API.normalizedImages(data.hits);
 
         setImages((prevImages) => [...prevImages, ...normalizedImages]);
         setTotalPages(Math.ceil(data.totalHits / 12));
-        setError('');
       } catch (error) {
-        setError('Something went wrong!');
+        console.error('Something went wrong!', error);
       } finally {
         setIsLoading(false);
       }
     };
 
+    // Вызываем addImages при изменении searchName или currentPage
     if (searchName || currentPage > 1) {
       addImages();
     }
@@ -78,6 +78,4 @@ export default function App ()  {
       )}
     </div>
   );
-};
-
-
+}
